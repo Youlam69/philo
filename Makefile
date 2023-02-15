@@ -8,7 +8,9 @@ INCLUDE = philo.h
 
 SRC = philo.c\
 	atoi.c\
-	parsing.c
+	parsing.c\
+	thread_file.c\
+	utils.c
 
 OBJ = $(SRC:.c=.o)
 

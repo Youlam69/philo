@@ -1,43 +1,50 @@
 #include "philo.h"
-static void	init_prm(t_data *p)
+
+void	init_prm(t_data *data)
 {
-	p->nof  = -1;
-	p->ttd  = -1;
-	p->tte = -1;
-	p->tts = -1;
-	p->nofe = -1;
+	data->nof  = -1;
+	data->ttd  = -1;
+	data->tte = -1;
+	data->tts = -1;
+	data->nofe = -1;
 }
 
-int data(t_data *p, int ac, char **av)
+int	data_p(t_data *data, int ac, char **av)
 {
-	init_prm(p);
-	p->nof = my_atoi(av[1]);
-	p->ttd = my_atoi(av[2]);
-	p->tte = my_atoi(av[3]);
-	p->tts = my_atoi(av[4]);
-	if (p->nof < 0 || p->ttd < 0 || p->tte < 0 || p->tts < 0)
+	init_prm(data);
+	data->nof = my_atoi(av[1]);
+	data->ttd = my_atoi(av[2]);
+	data->tte = my_atoi(av[3]);
+	data->tts = my_atoi(av[4]);
+	if (data->nof < 0 || data->ttd < 0 || data->tte < 0 || data->tts < 0)
 		return (-1);
 	if (ac == 6)
 	{
-		p->nofe = my_atoi(av[5]);
-		if(p->nofe <= 0)
+		data->nofe = my_atoi(av[5]);
+		if (data->nofe < 0)
 			return (-1);
+		if (data->nofe == 0)
+			return (-2);
 	}
 	return (0);
-
 }
 
-int parsing(int ac, char **av, t_data *p)
+int parsing(int ac, char **av, t_data *data)
 {
-	if (ac <= 4 || ac >= 7)
+	int	ref;
+
+	if (ac < 5 || ac > 6)
 	{
-		printf("error nbr prams\n");
-		exit(1);
+		printf("Error : nbr of prms\n");
+		return (1);
 	}
-	if (data(p, ac, av) < 0)
+	ref = data_p(data, ac, av);
+	if (ref < 0)
 	{
-		printf("error :> not invalid arguments\n");
-		exit(1);
+		if (ref == -1)
+			printf("Error : not invalid arguments\n");
+		return (1);
 	}
-	return 0;
+	return (0);
 }
+

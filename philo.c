@@ -1,4 +1,135 @@
 #include "philo.h"
+
+
+// int	rotine(t_ph *tph)
+// {
+// 	pthread_mutex_lock(&tph->tdata->fork[tph->p_ID - 1]);
+// 	print_msg("take a fork", tph, 1);
+// 	pthread_mutex_lock(&tph->tdata->fork[tph->p_ID % tph->tdata->nof]);
+// 	print_msg("take a fork", tph, 2);
+// 	usleep(tph->tdata->tte * 1000);
+// 	tph->last_eat = get_time();
+// 	pthread_mutex_unlock(&tph->tdata->fork[tph->p_ID - 1]);
+// 	pthread_mutex_unlock(&tph->tdata->fork[tph->p_ID % tph->tdata->nof]);
+// 	tph->nt_e++;
+// 	if (tph->nt_e == tph->tdata->nofe)
+// 		tph->tdata->all_eat++;
+// 	print_msg("sleep", tph, 1);
+// 	usleep(tph->tdata->tts * 1000);
+// 	print_msg("thinking", tph, 1);
+// 	return(0);
+// }
+
+// void	*die_conditon(void *death)
+// {
+// 	t_ph *tph;
+
+// 	tph = (t_ph *)death;
+// 	while(!tph->tdata->die)
+// 	{
+// 		if (get_time() - tph->last_eat >= tph->tdata->ttd)
+// 		{
+// 			pthread_mutex_lock(&tph->tdata->msg);
+// 			tph->tdata->die++;
+// 			print_msg("die", tph, 0);
+// 		}
+// 	}
+// 	return (NULL);
+// }
+
+// void	*work_p(void *p_tph)
+// {
+// 	pthread_t die;
+
+// 	t_ph *tph = (t_ph *)p_tph;
+// 	if (pthread_create(&die, NULL, die_conditon, tph))
+// 		return (NULL);
+// 	while (!tph->tdata->die)
+// 		rotine(tph);
+// 	pthread_detach(die);
+// 	return (NULL);
+// }
+
+// void	*death_note(void *death)
+// {
+// 	t_data *data;
+
+// 	data = (t_data *)death;
+// 	while(!data->die)
+// 	{
+// 		if((data->all_eat >= data->nof))
+// 		{
+// 			pthread_mutex_lock(&data->msg);
+// 			data->die++;
+// 		}
+// 	}
+// 	return (NULL);
+// }
+
+// int start_thread(t_data *data)
+// {
+// 	int			i;
+// 	pthread_t	die;
+
+// 	if (pthread_create(&die, NULL, death_note, data))
+// 		return (1);
+// 	i = -1;
+// 	data->die = 0;
+// 	data->all_eat = 0;
+// 	while (++i < data->nof)
+// 	{
+// 		data->tph[i].p_ID = i + 1;
+// 		data->tph[i].nt_e = 0;
+// 		if (!i)
+// 			data->start = get_time();
+// 		data->tph[i].last_eat = data->start;
+// 		if (pthread_create(&data->tph[i].suqrat, NULL, work_p, &data->tph[i]))
+// 			return (1);
+// 		pthread_detach(data->tph[i].suqrat);
+// 		usleep(69);
+// 	}
+// 	pthread_join(die, NULL);
+// 	return (0);
+// }
+
+int	forks_init(t_data *data)
+{
+	int	i;
+
+	i = -1;
+	if (pthread_mutex_init(&data->msg, NULL))
+		return(1);
+	while (++i < data->nof)
+	{
+		if (pthread_mutex_init(&(data->fork[i]), NULL))
+			return (1);
+		data->tph[i].tdata = data;
+	}
+	return (0);
+}
+
+int c_suqrats(t_data *data)
+{
+	data->fork = malloc(sizeof(pthread_mutex_t) * data->nof);
+	data->tph = malloc(sizeof(t_ph) * data->nof);
+	if (forks_init(data))
+		return (1);
+	if(start_thread(data))
+		return (1);
+	return 0;
+}
+
+int main(int ac, char **av)
+{
+	t_data data;
+
+	if (parsing(ac, av, &data))
+		return (1);
+	if (c_suqrats(&data))
+		return (1);
+	dstroy_m(&data);
+}
+
 // static void	init_prm(t_philo *p)
 // {
 // 	p->nof  = -1;
@@ -41,121 +172,6 @@
 // 		exit(1);
 // 	}
 // }
-
-int	forks_init(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	// pthread_mutex_init(&(options->log), NULL);
-	pthread_mutex_init(&data->msg, NULL);
-	while (i < data->nof)
-	{
-		printf("problem init fork -l %d\n", i);
-
-		if (pthread_mutex_init(&(data->fork[i]), NULL))
-			return (1);
-		printf("problem init fork %d\n", i);
-		data->tph[i].tdata = data;
-		i++;
-	}
-	return (0);
-}
-
-void print_msg(char *tab, int id,pthread_mutex_t print)
-{
-	printf("print %d\n",id);
-	fflush(stdout);
-	pthread_mutex_lock(&print);
-	printf("ana al faylasof : %d %s\n", id, tab);
-	fflush(stdout);
-	pthread_mutex_unlock(&print);
-}
-
-void	*testr(void *tph)
-{
-	
-	t_ph *p_tph = (t_ph *)tph;
-	print_msg("dkhalt", p_tph->p_ID, p_tph->tdata->msg);
-	// printf("Ana al faylasof raqem %d dkhalt db nit\n", p_tph->p_ID);
-	pthread_mutex_lock(&p_tph->tdata->fork[p_tph->p_ID - 1]);
-	print_msg("chdit frchity ana", p_tph->p_ID, p_tph->tdata->msg);
-	pthread_mutex_lock(&p_tph->tdata->fork[p_tph->p_ID % p_tph->tdata->nof]);
-	print_msg("kan9si", p_tph->p_ID, p_tph->tdata->msg);
-	// printf("Ana al faylasof raqem %d dba kan9assi\n", p_tph->p_ID);
-
-	sleep(p_tph->tdata->tte / 1000);
-	// 	printf("khrit\n");
-	// 	fflush(stdout);
-	// 	// write(1,"after eat \n", 11);
-	// }
-	
-	pthread_mutex_unlock(&p_tph->tdata->fork[p_tph->p_ID - 1]);
-	pthread_mutex_unlock(&p_tph->tdata->fork[p_tph->p_ID % p_tph->tdata->nof]);
-	
-	print_msg("sleep", p_tph->p_ID, p_tph->tdata->msg);
-	usleep(p_tph->tdata->tts * 1000);
-	print_msg("thinking", p_tph->p_ID, p_tph->tdata->msg);
-
-
-	return(NULL);
-}
-
-int c_suqrats(t_data *p)
-{
-	int i;
-	i = 0;
-
-	p->tabphilo = malloc(sizeof(pthread_t) * p->nof);
-	p->fork = malloc(sizeof(pthread_mutex_t) * p->nof);
-	p->tph = malloc(sizeof(t_ph) * p->nof);
-	if (forks_init(p))
-	{
-		printf("problem init fork 2\n");
-		return (1);
-	}
-	while (i < p->nof)
-	{
-		// if (i % 2 == 0) {
-		// 	printf("here zawji\n");
-			p->tph[i].p_ID = i + 1;
-			p->tph[i].t_e = 0;
-			p->tabphilo[i] = p->tph[i].suqrat;
-			if (pthread_create(&p->tabphilo[i], NULL, testr, &p->tph[i]))
-				return 1;
-			// usleep(200);
-		// }
-			i++;
-	}
-	// i = 0;
-	// while (i < p->nof)
-	// {
-	// 	if (i % 2 != 0) {
-	// 		printf("here ghayr zawji\n");
-	// 		p->tph[i].p_ID = i + 1;
-	// 		p->tph[i].t_e = 0;
-	// 		p->tabphilo[i] = p->tph[i].suqrat;
-	// 		if (pthread_create(&p->tabphilo[i], NULL, testr, &p->tph[i]))
-	// 			return 1;
-	// 		// usleep(200);
-	// 	}
-	// 		i++;
-	// }
-
-	return 0;
-}
-
-
-int main(int ac, char **av)
-{
-	// int i;
-	t_data p;
-	// t_ph  *philo;
-	parsing(ac, av, &p);
-	if (c_suqrats(&p))
-		return 1;
-		
-}
 
 	// if (ac <= 4 || ac >= 7)
 	// {
