@@ -21,7 +21,6 @@ typedef struct s_data
 	int					die;
 	long int			start;
 	pthread_mutex_t		msg;
-	// pthread_t			*tabphilo
 	pthread_mutex_t		*fork;
 	struct s_ph			*tph;
 }			t_data;
@@ -40,7 +39,7 @@ int			parsing(int ac, char **av, t_data *data);
 int			start_thread(t_data *data);
 long int	get_time(void);
 void		*work_p(void *p_tph);
-int			rotine(t_ph *tph);
+void		rotine(t_ph *tph);
 void		print_msg(char *tab, t_ph *tph, int ref);
 void		*die_conditon(void *death);
 void		*death_note(void *death);

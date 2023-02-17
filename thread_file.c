@@ -1,6 +1,6 @@
 #include "philo.h"
 
-int	rotine(t_ph *tph)
+void	rotine(t_ph *tph)
 {
 	pthread_mutex_lock(&tph->tdata->fork[tph->p_ID - 1]);
 	print_msg("take a fork", tph, 1);
@@ -16,7 +16,6 @@ int	rotine(t_ph *tph)
 	print_msg("sleep", tph, 1);
 	usleep(tph->tdata->tts * 1000);
 	print_msg("thinking", tph, 1);
-	return(0);
 }
 
 void	*die_conditon(void *death)
@@ -24,13 +23,29 @@ void	*die_conditon(void *death)
 	t_ph *tph;
 
 	tph = (t_ph *)death;
-	while(!tph->tdata->die)
+	while (1)
 	{
-		if (get_time() - tph->last_eat >= tph->tdata->ttd)
+		if (get_time() - tph->last_eat >= tph->tdata->ttd + (69/1000 * (tph->p_ID - 1)))
 		{
 			pthread_mutex_lock(&tph->tdata->msg);
 			tph->tdata->die++;
 			print_msg("die", tph, 0);
+		}
+	}
+	return (NULL);
+}
+
+void	*death_note(void *death)
+{
+	t_data *data;
+
+	data = (t_data *)death;
+	while (!data->die)
+	{
+		if(data->all_eat >= data->nof)
+		{
+			pthread_mutex_lock(&data->msg);
+			data->die++;
 		}
 	}
 	return (NULL);
@@ -49,21 +64,6 @@ void	*work_p(void *p_tph)
 	return (NULL);
 }
 
-void	*death_note(void *death)
-{
-	t_data *data;
-
-	data = (t_data *)death;
-	while(!data->die)
-	{
-		if((data->all_eat >= data->nof))
-		{
-			pthread_mutex_lock(&data->msg);
-			data->die++;
-		}
-	}
-	return (NULL);
-}
 
 int start_thread(t_data *data)
 {
