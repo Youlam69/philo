@@ -1,0 +1,17 @@
+At 0 Philosopher : 1 is take a fork
+At 0 Philosopher : 1 is take a fork
+At 0 Philosopher : 1 is eating
+At 1 Philosopher : 3 is take a fork
+At 1 Philosopher : 3 is take a fork
+At 1 Philosopher : 3 is eating
+At 200 Philosopher : 1 is sleep
+At 200 Philosopher : 2 is take a fork
+At 201 Philosopher : 2 is take a fork
+At 201 Philosopher : 2 is eating
+At 201 Philosopher : 4 is take a fork
+At 201 Philosopher : 4 is take a fork
+At 201 Philosopher : 4 is eating
+At 201 Philosopher : 3 is sleep
+At 300 Philosopher : 1 is thinking
+At 301 Philosopher : 3 is thinking
+At 310 Philosopher : 2 is die

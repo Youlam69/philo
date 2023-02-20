@@ -16,7 +16,7 @@ int	data_p(t_data *data, int ac, char **av)
 	data->ttd = my_atoi(av[2]);
 	data->tte = my_atoi(av[3]);
 	data->tts = my_atoi(av[4]);
-	if (data->nof < 0 || data->ttd < 0 || data->tte < 0 || data->tts < 0)
+	if (data->nof <= 0 || data->ttd <= 0 || data->tte <= 0 || data->tts <= 0)
 		return (-1);
 	if (ac == 6)
 	{
@@ -47,4 +47,3 @@ int parsing(int ac, char **av, t_data *data)
 	}
 	return (0);
 }
-

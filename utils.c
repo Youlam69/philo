@@ -20,15 +20,23 @@ void	print_msg(char *tab, t_ph *tph, int ref)
 		pthread_mutex_lock(&tph->tdata->msg);
 		if (ref == 2)
 		{
-			printf("At %ld Philosopher : %d is %s\n", get_time() - tph->tdata->start, tph->p_ID, tab);
-			printf("At %ld Philosopher : %d is %s\n", get_time() - tph->tdata->start, tph->p_ID, "eating");
+			printf("%ld %d %s\n", get_time() - tph->tdata->start, tph->p_ID, tab);
+			fflush(stdout);
+			printf("%ld %d %s\n", get_time() - tph->tdata->start, tph->p_ID, "is eating");
+			fflush(stdout);
+
 		}
-		else
-			printf("At %ld Philosopher : %d is %s\n", get_time() - tph->tdata->start, tph->p_ID, tab);
+		else{
+
+			printf("%ld %d %s\n", get_time() - tph->tdata->start, tph->p_ID, tab);
+			fflush(stdout);
+
+		}
+
 		pthread_mutex_unlock(&tph->tdata->msg);
 	}
 	else
-		printf("At %ld Philosopher : %d is %s\n", get_time() - tph->tdata->start, tph->p_ID, tab);	
+		printf("%ld %d %s\n", get_time() - tph->tdata->start, tph->p_ID, tab);	
 }
 
 long int	get_time(void)

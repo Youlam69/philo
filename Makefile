@@ -14,6 +14,8 @@ SRC = philo.c\
 
 OBJ = $(SRC:.c=.o)
 
+#  //// should i use object file to compil //*/**/
+
 all: $(NAME)
 
 $(NAME): $(SRC) $(INCLUDE)

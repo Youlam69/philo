@@ -3,19 +3,19 @@
 void	rotine(t_ph *tph)
 {
 	pthread_mutex_lock(&tph->tdata->fork[tph->p_ID - 1]);
-	print_msg("take a fork", tph, 1);
+	print_msg("has taken a fork", tph, 1);
 	pthread_mutex_lock(&tph->tdata->fork[tph->p_ID % tph->tdata->nof]);
-	print_msg("take a fork", tph, 2);
-	usleep(tph->tdata->tte * 1000);
+	print_msg("has taken a fork", tph, 2);
 	tph->last_eat = get_time();
+	usleep(tph->tdata->tte * 1000);
 	pthread_mutex_unlock(&tph->tdata->fork[tph->p_ID - 1]);
 	pthread_mutex_unlock(&tph->tdata->fork[tph->p_ID % tph->tdata->nof]);
 	tph->nt_e++;
 	if (tph->nt_e == tph->tdata->nofe)
 		tph->tdata->all_eat++;
-	print_msg("sleep", tph, 1);
+	print_msg("is sleeping", tph, 1);
 	usleep(tph->tdata->tts * 1000);
-	print_msg("thinking", tph, 1);
+	print_msg("is thinking", tph, 1);
 }
 
 void	*die_conditon(void *death)
@@ -23,13 +23,13 @@ void	*die_conditon(void *death)
 	t_ph *tph;
 
 	tph = (t_ph *)death;
-	while (1)
+	while (!tph->tdata->die)
 	{
-		if (get_time() - tph->last_eat >= tph->tdata->ttd + (69/1000 * (tph->p_ID - 1)))
+		if (get_time() - tph->last_eat >= tph->tdata->ttd + ((100 * (tph->p_ID - 1) / 1000)))
 		{
 			pthread_mutex_lock(&tph->tdata->msg);
+			print_msg("died", tph, 0);
 			tph->tdata->die++;
-			print_msg("die", tph, 0);
 		}
 	}
 	return (NULL);
@@ -81,11 +81,12 @@ int start_thread(t_data *data)
 		data->tph[i].nt_e = 0;
 		if (!i)
 			data->start = get_time();
+		// data->tph[i].last_eat = data->start;
 		data->tph[i].last_eat = data->start;
 		if (pthread_create(&data->tph[i].suqrat, NULL, work_p, &data->tph[i]))
 			return (1);
 		pthread_detach(data->tph[i].suqrat);
-		usleep(69);
+		usleep(50);
 	}
 	pthread_join(die, NULL);
 	return (0);
