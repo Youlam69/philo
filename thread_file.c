@@ -25,9 +25,11 @@ void	*die_conditon(void *death)
 	tph = (t_ph *)death;
 	while (!tph->tdata->die)
 	{
-		if (get_time() - tph->last_eat >= tph->tdata->ttd + ((100 * (tph->p_ID - 1) / 1000)))
+		if (get_time() - tph->last_eat > tph->tdata->ttd + 1) //+ ((100 * (tph->p_ID - 1) / 1000))
 		{
 			pthread_mutex_lock(&tph->tdata->msg);
+			printf("|%ld philo = %d|\n", get_time() - tph->last_eat, tph->p_ID);
+			fflush(stdout);
 			print_msg("died", tph, 0);
 			tph->tdata->die++;
 		}
@@ -56,14 +58,14 @@ void	*work_p(void *p_tph)
 	pthread_t die;
 
 	t_ph *tph = (t_ph *)p_tph;
+	tph->last_eat = get_time();
 	if (pthread_create(&die, NULL, die_conditon, tph))
 		return (NULL);
+	pthread_detach(die);
 	while (!tph->tdata->die)
 		rotine(tph);
-	pthread_detach(die);
 	return (NULL);
 }
-
 
 int start_thread(t_data *data)
 {
@@ -77,16 +79,12 @@ int start_thread(t_data *data)
 	data->all_eat = 0;
 	while (++i < data->nof)
 	{
-		data->tph[i].p_ID = i + 1;
-		data->tph[i].nt_e = 0;
 		if (!i)
 			data->start = get_time();
-		// data->tph[i].last_eat = data->start;
-		data->tph[i].last_eat = data->start;
 		if (pthread_create(&data->tph[i].suqrat, NULL, work_p, &data->tph[i]))
 			return (1);
 		pthread_detach(data->tph[i].suqrat);
-		usleep(50);
+		usleep(55);
 	}
 	pthread_join(die, NULL);
 	return (0);

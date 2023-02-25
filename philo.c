@@ -10,6 +10,8 @@ int	forks_init(t_data *data)
 		return (1);
 	while (++i < data->nof)
 	{
+		data->tph[i].p_ID = i + 1;
+		data->tph[i].nt_e = 0;
 		if (pthread_mutex_init(&(data->fork[i]), NULL))
 			return (1);
 		data->tph[i].tdata = data;
@@ -23,7 +25,7 @@ int	c_suqrats(t_data *data)
 	data->tph = malloc(sizeof(t_ph) * data->nof);
 	if (forks_init(data))
 		return (1);
-	if(start_thread(data))
+	if (start_thread(data))
 		return (1);
 	return (0);
 }
