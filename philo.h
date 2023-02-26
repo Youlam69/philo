@@ -21,17 +21,19 @@ typedef struct s_data
 	int					die;
 	long int			start;
 	pthread_mutex_t		msg;
+	pthread_mutex_t		race_die;
 	pthread_mutex_t		*fork;
 	struct s_ph			*tph;
 }			t_data;
 
 typedef struct	s_ph
 {
-	int			p_ID;
-	int			nt_e;
-	long int	last_eat;
-	pthread_t	suqrat;
-	t_data		*tdata;
+	int					p_ID;
+	int					nt_e;
+	long int			last_eat;
+	pthread_mutex_t		race_eat;
+	pthread_t			suqrat;
+	t_data				*tdata;
 }			t_ph;
 
 int			my_atoi(const char *str);
