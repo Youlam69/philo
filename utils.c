@@ -15,8 +15,6 @@ void	dstroy_m(t_data *data)
 
 void	print_msg(char *tab, t_ph *tph, int ref)
 {
-	// long int time_out;
-	// time_out = get_time() - ();
 	if (ref)
 	{
 		pthread_mutex_lock(&tph->tdata->msg);

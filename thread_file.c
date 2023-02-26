@@ -15,9 +15,13 @@ void	rotine(t_ph *tph)
 	usleep(tph->tdata->tte * 1000);
 	pthread_mutex_unlock(&tph->tdata->fork[tph->p_ID - 1]);
 	pthread_mutex_unlock(&tph->tdata->fork[tph->p_ID % tph->tdata->nof]);
+
 	tph->nt_e++;
+	pthread_mutex_lock(&tph->tdata->race_all_e);
 	if (tph->nt_e == tph->tdata->nofe)
 		tph->tdata->all_eat++;
+	pthread_mutex_unlock(&tph->tdata->race_all_e);
+
 	print_msg("is sleeping", tph, 1);
 	usleep(tph->tdata->tts * 1000);
 	print_msg("is thinking", tph, 1);
@@ -40,8 +44,8 @@ void	*die_conditon(void *death)
 		if (get_time() - tph->last_eat > tph->tdata->ttd) //+ ((100 * (tph->p_ID - 1) / 1000))
 		{
 			pthread_mutex_lock(&tph->tdata->msg);
-			printf("|%ld philo = %d|\n", get_time() - tph->last_eat, tph->p_ID);
-			fflush(stdout);
+			// printf("|%ld philo = %d|\n", get_time() - tph->last_eat, tph->p_ID);
+			// fflush(stdout);
 			print_msg("died", tph, 0);
 			tph->tdata->die++;
 		}
@@ -61,14 +65,15 @@ void	*death_note(void *death)
 	{
 		pthread_mutex_lock(&data->race_die);
 		if(data->die)
-		{
 			return NULL;
-		}
+
+		pthread_mutex_lock(&data->race_all_e);
 		if(data->all_eat >= data->nof)
 		{
 			pthread_mutex_lock(&data->msg);
 			data->die++;
 		}
+		pthread_mutex_unlock(&data->race_all_e);
 		pthread_mutex_unlock(&data->race_die);
 		usleep(1);
 	}
