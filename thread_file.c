@@ -6,7 +6,12 @@ void	rotine(t_ph *tph)
 	print_msg("has taken a fork", tph, 1);
 	pthread_mutex_lock(&tph->tdata->fork[tph->p_ID % tph->tdata->nof]);
 	print_msg("has taken a fork", tph, 2);
+
+	pthread_mutex_lock(&tph->race_eat);
 	tph->last_eat = get_time();
+	pthread_mutex_unlock(&tph->race_eat);
+
+
 	usleep(tph->tdata->tte * 1000);
 	pthread_mutex_unlock(&tph->tdata->fork[tph->p_ID - 1]);
 	pthread_mutex_unlock(&tph->tdata->fork[tph->p_ID % tph->tdata->nof]);
@@ -23,9 +28,16 @@ void	*die_conditon(void *death)
 	t_ph *tph;
 
 	tph = (t_ph *)death;
-	while (!tph->tdata->die)
+	while (1)
 	{
-		if (get_time() - tph->last_eat > tph->tdata->ttd + 1) //+ ((100 * (tph->p_ID - 1) / 1000))
+		pthread_mutex_lock(&tph->tdata->race_die);
+		if (tph->tdata->die)
+		{
+			pthread_mutex_unlock(&tph->tdata->race_die);
+			return NULL;
+		}
+		pthread_mutex_lock(&tph->race_eat);
+		if (get_time() - tph->last_eat > tph->tdata->ttd) //+ ((100 * (tph->p_ID - 1) / 1000))
 		{
 			pthread_mutex_lock(&tph->tdata->msg);
 			printf("|%ld philo = %d|\n", get_time() - tph->last_eat, tph->p_ID);
@@ -33,6 +45,9 @@ void	*die_conditon(void *death)
 			print_msg("died", tph, 0);
 			tph->tdata->die++;
 		}
+		pthread_mutex_unlock(&tph->race_eat);
+		pthread_mutex_unlock(&tph->tdata->race_die);
+		usleep(1);
 	}
 	return (NULL);
 }
@@ -42,13 +57,20 @@ void	*death_note(void *death)
 	t_data *data;
 
 	data = (t_data *)death;
-	while (!data->die)
+	while (1)
 	{
+		pthread_mutex_lock(&data->race_die);
+		if(data->die)
+		{
+			return NULL;
+		}
 		if(data->all_eat >= data->nof)
 		{
 			pthread_mutex_lock(&data->msg);
 			data->die++;
 		}
+		pthread_mutex_unlock(&data->race_die);
+		usleep(1);
 	}
 	return (NULL);
 }
@@ -62,8 +84,18 @@ void	*work_p(void *p_tph)
 	if (pthread_create(&die, NULL, die_conditon, tph))
 		return (NULL);
 	pthread_detach(die);
-	while (!tph->tdata->die)
+	while (1)
+	{
+		pthread_mutex_lock(&tph->tdata->race_die);
+		if(tph->tdata->die)
+		{
+			pthread_mutex_unlock(&tph->tdata->race_die);
+			return (NULL);
+		}
+		pthread_mutex_unlock(&tph->tdata->race_die);
+
 		rotine(tph);
+	}
 	return (NULL);
 }
 

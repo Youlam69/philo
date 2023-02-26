@@ -2,8 +2,8 @@ NAME = philo
 
 CC = gcc
 
-FLAGS = -Wall -Wextra -Werror -pthread
-
+FLAGS = -Wall -Wextra -Werror -pthread -fsanitize=thread
+# -fsanitize=thread
 INCLUDE = philo.h
 
 SRC = philo.c\
