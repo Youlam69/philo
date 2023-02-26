@@ -1,6 +1,5 @@
 #include "philo.h"
 
-
 int	forks_init(t_data *data)
 {
 	int	i;
@@ -8,11 +7,17 @@ int	forks_init(t_data *data)
 	i = -1;
 	if (pthread_mutex_init(&data->msg, NULL))
 		return (1);
+	if (pthread_mutex_init(&data->race_all_e, NULL))
+		return (1);
+	if (pthread_mutex_init(&data->race_die, NULL))
+		return (1);
 	while (++i < data->nof)
 	{
 		data->tph[i].p_ID = i + 1;
 		data->tph[i].nt_e = 0;
 		if (pthread_mutex_init(&(data->fork[i]), NULL))
+			return (1);
+		if (pthread_mutex_init(&(data->tph[i].race_eat), NULL))
 			return (1);
 		data->tph[i].tdata = data;
 	}

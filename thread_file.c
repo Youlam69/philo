@@ -72,11 +72,11 @@ int start_thread(t_data *data)
 	int			i;
 	pthread_t	die;
 
-	if (pthread_create(&die, NULL, death_note, data))
-		return (1);
 	i = -1;
 	data->die = 0;
 	data->all_eat = 0;
+	if (pthread_create(&die, NULL, death_note, data))
+		return (1);
 	while (++i < data->nof)
 	{
 		if (!i)
