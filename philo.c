@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ylamraou <ylamraou@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/26 23:04:31 by ylamraou          #+#    #+#             */
+/*   Updated: 2023/02/26 23:04:43 by ylamraou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 int	forks_init(t_data *data)
@@ -35,9 +47,9 @@ int	c_suqrats(t_data *data)
 	return (0);
 }
 
-int main(int ac, char **av)
+int	main(int ac, char **av)
 {
-	t_data data;
+	t_data	data;
 
 	if (parsing(ac, av, &data))
 		return (1);

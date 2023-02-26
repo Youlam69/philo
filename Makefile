@@ -20,7 +20,8 @@ all: $(NAME)
 
 $(NAME): $(OBJ) $(INCLUDE)
 	$(CC) $(FLAGS) $(SRC) -o $(NAME)
-
+clean:
+	rm -rf $(OBJ)
 fclean:
 	rm -rf $(NAME) $(OBJ)
 
