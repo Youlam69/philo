@@ -15,20 +15,23 @@ void	dstroy_m(t_data *data)
 
 void	print_msg(char *tab, t_ph *tph, int ref)
 {
+	long int time_start;
+
+	time_start = get_time() - tph->tdata->start;
 	if (ref)
 	{
 		pthread_mutex_lock(&tph->tdata->msg);
 		if (ref == 2)
 		{
-			printf("%ld %d %s\n", get_time() - tph->tdata->start + ((tph->p_ID * 55)/1000), tph->p_ID, tab);
-			printf("%ld %d %s\n", get_time() - tph->tdata->start + ((tph->p_ID * 55)/1000), tph->p_ID, "is eating");
+			printf("%ld %d %s\n", time_start, tph->p_ID, tab);
+			printf("%ld %d %s\n", time_start, tph->p_ID, "is eating");
 		}
 		else
-			printf("%ld %d %s\n", get_time() - tph->tdata->start + ((tph->p_ID * 55)/1000), tph->p_ID, tab);
+			printf("%ld %d %s\n", time_start, tph->p_ID, tab);
 		pthread_mutex_unlock(&tph->tdata->msg);
 	}
 	else
-		printf("%ld %d %s\n", get_time() - tph->tdata->start + ((tph->p_ID * 55)/1000), tph->p_ID, tab);	
+		printf("%ld %d %s\n", time_start, tph->p_ID, tab);	
 }
 
 long int	get_time(void)
