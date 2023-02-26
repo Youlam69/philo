@@ -1,46 +1,39 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   thread_file.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ylamraou <ylamraou@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/26 22:53:32 by ylamraou          #+#    #+#             */
+/*   Updated: 2023/02/26 22:59:07 by ylamraou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
-void	rotine(t_ph *tph)
+void	anex_die(t_ph *tph)
 {
-	pthread_mutex_lock(&tph->tdata->fork[tph->p_ID - 1]);
-	print_msg("has taken a fork", tph, 1);
-	pthread_mutex_lock(&tph->tdata->fork[tph->p_ID % tph->tdata->nof]);
-	print_msg("has taken a fork", tph, 2);
 	pthread_mutex_lock(&tph->race_eat);
-	tph->last_eat = get_time();
+	if (get_time() - tph->last_eat > tph->tdata->ttd)
+	{
+		pthread_mutex_lock(&tph->tdata->msg);
+		print_msg("died", tph, 0);
+		tph->tdata->die++;
+	}
 	pthread_mutex_unlock(&tph->race_eat);
-	usleep(tph->tdata->tte * 1000);
-	pthread_mutex_unlock(&tph->tdata->fork[tph->p_ID - 1]);
-	pthread_mutex_unlock(&tph->tdata->fork[tph->p_ID % tph->tdata->nof]);
-	tph->nt_e++;
-	pthread_mutex_lock(&tph->tdata->race_all_e);
-	if (tph->nt_e == tph->tdata->nofe)
-		tph->tdata->all_eat++;
-	pthread_mutex_unlock(&tph->tdata->race_all_e);
-	print_msg("is sleeping", tph, 1);
-	usleep(tph->tdata->tts * 1000);
-	print_msg("is thinking", tph, 1);
 }
 
 void	*die_conditon(void *death)
 {
-	t_ph *tph;
+	t_ph	*tph;
 
 	tph = (t_ph *)death;
 	while (1)
 	{
 		pthread_mutex_lock(&tph->tdata->race_die);
 		if (!tph->tdata->die)
-		{
-			pthread_mutex_lock(&tph->race_eat);
-			if (get_time() - tph->last_eat > tph->tdata->ttd)
-			{
-				pthread_mutex_lock(&tph->tdata->msg);
-				print_msg("died", tph, 0);
-				tph->tdata->die++;
-			}
-			pthread_mutex_unlock(&tph->race_eat);
-		}
+			anex_die(tph);
 		else
 		{
 			pthread_mutex_unlock(&tph->tdata->race_die);
@@ -54,16 +47,16 @@ void	*die_conditon(void *death)
 
 void	*death_note(void *death)
 {
-	t_data *data;
+	t_data	*data;
 
 	data = (t_data *)death;
-	while(1)
+	while (1)
 	{
 		pthread_mutex_lock(&data->race_die);
-		if(!data->die)
+		if (!data->die)
 		{
 			pthread_mutex_lock(&data->race_all_e);
-			if(data->all_eat >= data->nof)
+			if (data->all_eat >= data->nof)
 			{
 				pthread_mutex_lock(&data->msg);
 				data->die++;
@@ -84,7 +77,7 @@ void	*death_note(void *death)
 void	*work_p(void *p_tph)
 {
 	pthread_t	die;
-	t_ph *tph;
+	t_ph		*tph;
 
 	tph = (t_ph *)p_tph;
 	tph->last_eat = get_time();
@@ -106,7 +99,7 @@ void	*work_p(void *p_tph)
 	return (NULL);
 }
 
-int start_thread(t_data *data)
+int	start_thread(t_data *data)
 {
 	int			i;
 	pthread_t	die;
@@ -126,6 +119,5 @@ int start_thread(t_data *data)
 		usleep(55);
 	}
 	pthread_join(die, NULL);
-	// usleep(data->nofe * 50);
 	return (0);
 }

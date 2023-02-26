@@ -6,10 +6,11 @@ FLAGS = -Wall -Wextra -Werror -pthread
 INCLUDE = philo.h
 
 SRC = philo.c\
-	atoi.c\
 	parsing.c\
 	thread_file.c\
 	utils.c
+
+# atoi.c\
 
 OBJ = $(SRC:.c=.o)
 
@@ -17,10 +18,10 @@ OBJ = $(SRC:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(SRC) $(INCLUDE)
+$(NAME): $(OBJ) $(INCLUDE)
 	$(CC) $(FLAGS) $(SRC) -o $(NAME)
 
 fclean:
-	rm -rf $(NAME)
+	rm -rf $(NAME) $(OBJ)
 
 re: fclean all
