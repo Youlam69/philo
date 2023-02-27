@@ -36,6 +36,7 @@ void	*die_conditon(void *death)
 			anex_die(tph);
 		else
 		{
+			tph->tdata->die++;
 			pthread_mutex_unlock(&tph->tdata->race_die);
 			return (NULL);
 		}
@@ -65,7 +66,7 @@ void	*death_note(void *death)
 		}
 		else
 		{
-			usleep(data->nof * 1500);
+			pthread_mutex_unlock(&data->race_die);
 			return (NULL);
 		}
 		pthread_mutex_unlock(&data->race_die);
@@ -83,7 +84,6 @@ void	*work_p(void *p_tph)
 	tph->last_eat = get_time();
 	if (pthread_create(&die, NULL, die_conditon, tph))
 		return (NULL);
-	pthread_detach(die);
 	while (1)
 	{
 		pthread_mutex_lock(&tph->tdata->race_die);
@@ -96,6 +96,7 @@ void	*work_p(void *p_tph)
 		rotine(tph);
 		usleep(1);
 	}
+	pthread_detach(die);
 	return (NULL);
 }
 

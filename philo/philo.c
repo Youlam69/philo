@@ -12,6 +12,16 @@
 
 #include "philo.h"
 
+long int	get_time(void)
+{
+	struct timeval	t_v;
+	long int		t_ms;
+
+	gettimeofday(&t_v, NULL);
+	t_ms = ((t_v.tv_sec * 1000) + (t_v.tv_usec / 1000));
+	return (t_ms);
+}
+
 int	forks_init(t_data *data)
 {
 	int	i;

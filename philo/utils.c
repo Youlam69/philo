@@ -33,12 +33,28 @@ void	rotine(t_ph *tph)
 	usleep(tph->tdata->tts * 1000);
 	print_msg("is thinking", tph, 1);
 }
+	
+void	wait_destroy(t_data *data)
+{
+	while (1)
+	{
+		pthread_mutex_lock(&data->race_die);
+		if (data->die >= data->nof)
+		{
+			pthread_mutex_unlock(&data->race_die);
+			return ;
+		}
+		pthread_mutex_unlock(&data->race_die);
+		usleep(1);
+	}
+}
 
 void	dstroy_m(t_data *data)
 {
 	int	i;
 
 	i = -1;
+	wait_destroy(data);
 	free(data->tph);
 	data->tph = NULL;
 	pthread_mutex_destroy(&(data->msg));
@@ -68,15 +84,6 @@ void	print_msg(char *tab, t_ph *tph, int ref)
 		printf("%ld %d %s\n", time_start, tph->p_ID, tab);
 }
 
-long int	get_time(void)
-{
-	struct timeval	t_v;
-	long int		t_ms;
-
-	gettimeofday(&t_v, NULL);
-	t_ms = ((t_v.tv_sec * 1000) + (t_v.tv_usec / 1000));
-	return (t_ms);
-}
 
 int	my_atoi(const char *str)
 {
